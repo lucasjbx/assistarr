@@ -191,7 +191,7 @@ export const tools = [
   },
 ];
 
-export const SERVER_INFO = { name: "media-mcp", version: "1.0.0" };
+export const SERVER_INFO = { name: "Assistarr", version: "1.0.0" };
 export const SERVER_CAPABILITIES = { tools: {} };
 
 export function createServer() {

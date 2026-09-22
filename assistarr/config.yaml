@@ -1,5 +1,5 @@
 name: Assistarr
-version: "1.0.2"
+version: "1.0.3"
 slug: assistarr
 description: MCP server (Streamable HTTP) que conecta Radarr/Sonarr con HA Assist, Claude y Gemini
 url: https://github.com/lucasjbx/assistarr
