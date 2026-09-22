@@ -1,0 +1,24 @@
+name: Assistarr
+version: "1.0.0"
+slug: assistarr
+description: MCP server (Streamable HTTP) que conecta Radarr/Sonarr con HA Assist, Claude y Gemini
+url: https://github.com/lucasjbx/assistarr
+arch:
+  - amd64
+  - aarch64
+init: false
+host_network: true
+startup: application
+boot: auto
+options:
+  radarr_url: ""
+  radarr_api_key: ""
+  sonarr_url: ""
+  sonarr_api_key: ""
+  port: 8787
+schema:
+  radarr_url: "url"
+  radarr_api_key: "password"
+  sonarr_url: "url"
+  sonarr_api_key: "password"
+  port: "port"
