@@ -191,8 +191,11 @@ export const tools = [
   },
 ];
 
+export const SERVER_INFO = { name: "media-mcp", version: "1.0.0" };
+export const SERVER_CAPABILITIES = { tools: {} };
+
 export function createServer() {
-  const server = new Server({ name: "media-mcp", version: "1.0.0" }, { capabilities: { tools: {} } });
+  const server = new Server(SERVER_INFO, { capabilities: SERVER_CAPABILITIES });
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: tools.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })),

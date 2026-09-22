@@ -16,7 +16,7 @@ import http from "node:http";
 import { randomUUID } from "node:crypto";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
-import { createServer as createMcpServer, env } from "./tools.mjs";
+import { createServer as createMcpServer, env, SERVER_INFO, SERVER_CAPABILITIES } from "./tools.mjs";
 
 const port = Number(env.MCP_LOCAL_PORT || 8787);
 const sessions = new Map();
@@ -53,6 +53,27 @@ const httpServer = http.createServer(async (req, res) => {
   if (sessionId && sessions.has(sessionId)) {
     const transport = sessions.get(sessionId);
     const body = req.method === "POST" ? await readBody(req) : undefined;
+    if (req.method === "POST" && isInitializeRequest(body)) {
+      // El cliente MCP de HA (mcp.client.streamable_http) a veces reenvia "initialize"
+      // sobre una sesion que ya establecio segundos antes (visto en logs de HA: 2 initialize
+      // en el mismo TaskGroup). El transporte del SDK rechaza el segundo con 400 "Server
+      // already initialized" y HA trata eso como fallo total de la conexion, aunque el
+      // primer handshake ya habia funcionado. Se responde idempotente en vez de reenviarlo.
+      res
+        .writeHead(200, { "Content-Type": "application/json", "mcp-session-id": sessionId })
+        .end(
+          JSON.stringify({
+            jsonrpc: "2.0",
+            id: body.id,
+            result: {
+              protocolVersion: body.params?.protocolVersion,
+              capabilities: SERVER_CAPABILITIES,
+              serverInfo: SERVER_INFO,
+            },
+          })
+        );
+      return;
+    }
     await transport.handleRequest(req, res, body);
     return;
   }
