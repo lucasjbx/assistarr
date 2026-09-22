@@ -1,9 +1,10 @@
 // Servidor MCP (Streamable HTTP) para la integracion nativa "Model Context Protocol" de Home
 // Assistant (Ajustes > Dispositivos y servicios > Agregar integracion > "Model Context Protocol").
 // Uso interno a la red de HA unicamente (no exponer a internet). URL a configurar en HA:
-//   http://localhost:8787/mcp
-// Corre como add-on propio con host_network: true (repo "assistarr"), por eso comparte la red
-// del host con HA Core y se puede llamar por localhost en vez de un hostname de Supervisor.
+//   http://<hostname-del-addon>:8787/mcp   (ej. http://f54fb328-assistarr:8787/mcp)
+// Corre como add-on propio (repo "assistarr") en la red interna de Supervisor, igual que
+// Radarr/Sonarr/Claude Terminal -- NO usa host_network (Core tambien vive en esa red interna
+// y no tiene ruta a la LAN, asi que host_network lo hubiera dejado inalcanzable).
 // Puerto configurable con la opcion "port" del add-on (MCP_LOCAL_PORT internamente, default 8787).
 //
 // Nota (2026-09-20): el nombre del archivo quedo como "sse-server.mjs" por historia, pero
