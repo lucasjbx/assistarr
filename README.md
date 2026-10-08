@@ -10,6 +10,9 @@ externos como Claude o Gemini.
 1. Settings > Add-ons > Add-on Store > ⋮ > Repositories > agregar `https://github.com/lucasjbx/assistarr`
 2. Instalar el add-on **Assistarr**.
 3. Configurar en sus opciones: `radarr_url`, `radarr_api_key`, `sonarr_url`, `sonarr_api_key`.
-4. Iniciar el add-on (`host_network: true`, escucha en `0.0.0.0:8787`, endpoint `/mcp`).
-5. En HA: Ajustes > Dispositivos y servicios > Agregar integración > "Model Context Protocol",
-   URL `http://localhost:8787/mcp`.
+4. Iniciar el add-on (escucha en `0.0.0.0:8787`, endpoint `/mcp`).
+5. En HA 2026.10 o superior el servidor se descubre solo: aparece **Assistarr** como
+   descubierto en Ajustes > Dispositivos y servicios; basta con confirmar.
+   En versiones anteriores: Agregar integración > "Model Context Protocol", URL
+   `http://<hostname-del-addon>:8787/mcp` (ej. `http://f54fb328-assistarr:8787/mcp`;
+   el hostname aparece en la página del add-on).

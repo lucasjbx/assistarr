@@ -1,5 +1,5 @@
 name: Assistarr
-version: "1.0.3"
+version: "1.0.4"
 slug: assistarr
 description: MCP server (Streamable HTTP) que conecta Radarr/Sonarr con HA Assist, Claude y Gemini
 url: https://github.com/lucasjbx/assistarr
@@ -9,6 +9,9 @@ arch:
 init: false
 startup: application
 boot: auto
+hassio_api: true   # para anunciarse al Supervisor (discovery)
+discovery:
+  - mcp            # HA 2026.10+ descubre el servidor MCP automaticamente
 ports:
   8787/tcp: 8787
 options:
