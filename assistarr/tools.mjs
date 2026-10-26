@@ -54,6 +54,21 @@ async function api(service, path, { method = "GET", body } = {}) {
 
 export { env };
 
+const DEFAULT_QUALITY_PROFILE = "HD-1080p";
+
+// Si el modelo no indica perfil/carpeta, usar HD-1080p (o el primero) y la primera carpeta raiz.
+async function resolveDefaults(service, { qualityProfileId, rootFolderPath }) {
+  if (qualityProfileId == null) {
+    const profiles = await api(service, "/qualityprofile");
+    qualityProfileId = (profiles.find((p) => p.name === DEFAULT_QUALITY_PROFILE) ?? profiles[0]).id;
+  }
+  if (!rootFolderPath) {
+    const [folder] = await api(service, "/rootfolder");
+    rootFolderPath = folder.path;
+  }
+  return { qualityProfileId, rootFolderPath };
+}
+
 export const tools = [
   {
     name: "radarr_search_movie",
@@ -81,13 +96,14 @@ export const tools = [
       type: "object",
       properties: {
         tmdbId: { type: "number" },
-        qualityProfileId: { type: "number", description: "Usar radarr_quality_profiles para ver opciones" },
-        rootFolderPath: { type: "string", description: "Usar radarr_root_folders para ver opciones" },
+        qualityProfileId: { type: "number", description: "Opcional; por defecto HD-1080p. Usar radarr_quality_profiles solo si el usuario pide otra calidad" },
+        rootFolderPath: { type: "string", description: "Opcional; por defecto la primera carpeta raiz" },
         searchNow: { type: "boolean", default: true },
       },
-      required: ["tmdbId", "qualityProfileId", "rootFolderPath"],
+      required: ["tmdbId"],
     },
-    handler: async ({ tmdbId, qualityProfileId, rootFolderPath, searchNow = true }) => {
+    handler: async ({ tmdbId, searchNow = true, ...opts }) => {
+      const { qualityProfileId, rootFolderPath } = await resolveDefaults("radarr", opts);
       const [lookup] = await api("radarr", `/movie/lookup/tmdb?tmdbId=${tmdbId}`).then((r) =>
         Array.isArray(r) ? r : [r]
       );
@@ -147,14 +163,15 @@ export const tools = [
       type: "object",
       properties: {
         tvdbId: { type: "number" },
-        qualityProfileId: { type: "number", description: "Usar sonarr_quality_profiles para ver opciones" },
-        rootFolderPath: { type: "string", description: "Usar sonarr_root_folders para ver opciones" },
+        qualityProfileId: { type: "number", description: "Opcional; por defecto HD-1080p. Usar sonarr_quality_profiles solo si el usuario pide otra calidad" },
+        rootFolderPath: { type: "string", description: "Opcional; por defecto la primera carpeta raiz" },
         seasonFolder: { type: "boolean", default: true },
         searchNow: { type: "boolean", default: true },
       },
-      required: ["tvdbId", "qualityProfileId", "rootFolderPath"],
+      required: ["tvdbId"],
     },
-    handler: async ({ tvdbId, qualityProfileId, rootFolderPath, seasonFolder = true, searchNow = true }) => {
+    handler: async ({ tvdbId, seasonFolder = true, searchNow = true, ...opts }) => {
+      const { qualityProfileId, rootFolderPath } = await resolveDefaults("sonarr", opts);
       const lookup = await api("sonarr", `/series/lookup?term=tvdb:${tvdbId}`);
       const series = lookup[0];
       const payload = {
